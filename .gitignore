@@ -5,3 +5,4 @@ tmp
 */.DS_Store
 .DS_Store
 *.css.map
+data/npr-one-station-data.csv
