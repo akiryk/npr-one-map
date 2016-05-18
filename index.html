@@ -14,7 +14,7 @@
   <!-- build:remove -->
     <script src="http://localhost:35729/livereload.js"></script>
   <!-- /build -->
-  
+
   <script src="dev/js/libs/topojson.js"></script>
   <script src="dev/js/libs/d3.min.js"></script>
 
@@ -22,24 +22,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="prod/css/style.css">
 </head>
-<body>
-  
+<body class="show-all">
+  <header><h1 class="page-title">NPR One Station Engagement</h1></header>
   <nav class="navigation">
-    <div class="radio-group">
-      <span class="label">Base Bubble Size On:</span>
-      <input type="radio" name="data-type" value="TSR" id="tsr" checked><label for="tsr">Station's TSR</label> 
-      <input type="radio" name="data-type" value="products" id="products"><label for="products">Total Products Used By Station</label>
-    </div>
-    <ul class="menu">
-      <li>Filters:</li>
-      <li data-filter="all">All Stations</li>
-      <li data-filter="corepub">Core Publisher Stations</li>
-      <li data-filter="composer">Composer Pro</li>
-      <li data-filter="springboard">Springboard</li>
+    <ul class="radio-group">
+      <li><input type="radio" name="data-type" value="all" id="all" checked><label for="all">All eligible stations</label></li>
+      <li><input type="radio" name="data-type" value="participating" id="participating" ><label for="participating">Only participating stations</label></li>
+      <li><input type="radio" name="data-type" value="comparison" id="comparison" ><label for="comparison">Both participating and non-participating stations</label></li>
     </ul>
-  </nav> 
+    <div class="help-text">
+      <p id="help-text-content">Eligible stations are defined as stations with the right to share content with NPR One. Larger circles indicate stations with a larger cume. Mouse over circles to see details.</p>
+      <p><span class="total">Total U.S. Cume: 4,959,792</span></p>
+    </div>
+  </nav>
 
-      
+
   <script src="dev/js/libs/jquery.js"></script>
   <script src="dev/js/main.js"></script>
 

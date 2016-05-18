@@ -9498,7 +9498,7 @@ topojson = (function() {
    */
   var Model = {
 
-    dataSrc: 'data/stations4.csv'
+    dataSrc: 'data/npr-one-station-data.csv'
 
   };
 
@@ -9521,7 +9521,7 @@ topojson = (function() {
 
       this.makeMap();
 
-      // Initialize the views 
+      // Initialize the views
       View.init();
       NavigationView.init();
 
@@ -9539,8 +9539,8 @@ topojson = (function() {
           console.log(error);
         } else {
           self.data = data;
-          View.render('TSR');
-        } 
+          View.render('cume');
+        }
 
       });
 
@@ -9550,8 +9550,8 @@ topojson = (function() {
      * Rerender dots based on whether user has selected TSR or # of products
      * @param {string} type - TSR or products
      */
-    updateBubbleSizes: function(type){
-      View.render(type);
+    reRender: function(){
+      View.render();
     },
 
     /**
@@ -9560,19 +9560,7 @@ topojson = (function() {
      */
     switchFilters: function(str){
       d3.selectAll('.hidden').classed('hidden', false);
-      switch (str){
-        case 'corepub':
-          View.filter('Core Publisher')
-          break;
-        case 'composer':
-          View.filter('Composer Pro');
-          break;
-        case 'springboard':
-          View.filter('Springboard Donation Forms');
-          break;
-        default: 
-          d3.selectAll('.hidden').classed('hidden', false);
-      }
+      View.filter(str);
     },
 
     getData: function(){
@@ -9598,7 +9586,7 @@ topojson = (function() {
       this.projection = d3.geo.albersUsa();
 
       this.projection.scale(1000 * scale);
-      this.projection.translate([400*scale,250*scale]); 
+      this.projection.translate([400*scale,250*scale]);
 
       var path = d3.geo.path().projection(this.projection);
 
@@ -9629,18 +9617,27 @@ topojson = (function() {
      */
     getTooltipMarkup: function(d){
 
-      var mk = "<h3>title</h3>" +
-        "<h5>Uses numProducts DS products</h5>" + 
+      var stationType = d.newscasts == 0 ? "non-participant" : "participant";
+
+
+      var mk =  "<div class='slug type'>type</div>" +
+        "<h3>title</h3>" +
+        "<p><span class='cume'>CUME:</span> cumenum</p>" +
         "<img src='imgsrc'>";
 
+      var stationLogo = d.logo;
+
+      if (stationLogo == ''){
+        stationLogo = "station_logos/a-default.gif";
+      }
       var mapObj = {
-        title: d.name.replace(/-FM|-AM/, ''),
-        imgsrc: "http://media.npr.org/images/stations/logos/" + 
-              d.name.toLowerCase().replace('-','_') + ".gif",
-        numProducts: d['total products']
+        type: stationType,
+        title: d.name,
+        imgsrc: "data/" + stationLogo,
+        cumenum: d.cume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       };
 
-      return mk.replace(/title|numProducts|imgsrc/gi, function(matched){
+      return mk.replace(/type|title|cumenum|imgsrc/gi, function(matched){
         return mapObj[matched];
       });
 
@@ -9653,8 +9650,8 @@ topojson = (function() {
     init: function(){
 
       // Create tool tip
-      this.tooltip = d3.select("body").append("div")   
-        .attr("class", "tooltip")               
+      this.tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
         .style("opacity", 0);
 
       this.svg = d3.select("body").append("svg")
@@ -9687,8 +9684,9 @@ topojson = (function() {
      */
     filter: function(filterText){
       var dots = this.svg.selectAll("circle").data(Controller.getData());
-      dots.filter(function(d) { 
-          if (d[filterText]==0) { 
+      dots.filter(function(d) {
+          if (filterText == "all") {
+            // Show all eligible stations as gray dots
             return this;
           } else {
             return null;
@@ -9710,34 +9708,46 @@ topojson = (function() {
 
       var dots = this.svg.selectAll("circle").data(_data);
 
-      var renderFunc; 
-
+      var renderFunc;
       if (type == 'TSR'){
         renderFunc = 'renderByTSR';
       } else {
-        renderFunc = 'renderByProducts';
+        renderFunc = 'renderByCume';
       }
 
       this[renderFunc](dots); //this[getScaleFn](dots);
 
-      dots.on("mouseover", function(d){ 
+      dots.on("mouseover", function(d){
+        var toolTipXOffset = 20,
+            toolTipYOffset = 0;
+
+        if ((d3.event.pageX + 260) > window.innerWidth){
+          // tooltip will be too far to the right.
+          toolTipXOffset = -280;
+        }
+
+        if ((d3.event.pageY + 128) > window.innerHeight){
+          // tooltip will be too far to the right.
+          toolTipYOffset = -128;
+        }
+
+        var r = Math.round(this.getAttribute('r')),
+            cx = Math.round(this.getAttribute('cx')),
+            cy = Math.round(this.getAttribute('cy'));
           d3.select(this).classed('active', true);
-          div.transition()        
-            .duration(200)      
-            .style("opacity", .9); 
+          div.transition()
+            .duration(200)
+            .style("opacity", .9);
           var markup = self.getTooltipMarkup(d);
           div.html(markup)
-            .style("left", (d3.event.pageX) + "px")     
-            .style("top", (d3.event.pageY - 28) + "px");    
+            .style("left",  (d3.event.pageX) + toolTipXOffset + "px")
+            .style("top", (d3.event.pageY) + toolTipYOffset + "px");
         })
         .on("mouseout", function(d){
           d3.select(this).classed('active', false);
-          div.transition()        
-            .duration(200)      
-            .style("opacity", 0); 
-        })
-        .on("click", function(d){
-          console.dir(d['product names'].split(', '));
+          div.transition()
+            .duration(200)
+            .style("opacity", 0);
         });
 
       dots.each(function(d,i){
@@ -9769,19 +9779,39 @@ topojson = (function() {
 
       var scale = d3.scale.linear(),
           domain = scale.domain([min, max]),
-          range = scale.range([2, 36]);
-       
+          range = scale.range([5, 50]);
+
       dots.enter()
         .append("circle")
-        .attr("cx", function (d) { return projection([d.longitude,d.latitude])[0]; })
-        .attr("cy", function (d) { return projection([d.longitude,d.latitude])[1]; })
+        .attr("cx", function (d) {
+          if (d.longitude == 0 || d.latitude == 0){
+            return projection([-95,40])[0];
+          }
+          return projection([d.longitude,d.latitude])[0];
+
+        })
+        .attr("cy", function (d) {
+          if (d.longitude == 0 || d.latitude == 0){
+            return projection([-95,40])[1];
+          }
+          return projection([d.longitude,d.latitude])[1];
+
+        })
         .attr("r", 0)
-        .attr("fill", "hsla(205,75%,60%,1")
-        .transition()
-          .duration(1250)
-          .attr("r", function(d) {
-            return scale(d.TSR);
-          });
+        .attr("fill", function (d) {
+          if (d.newscasts == 0){
+            return "hsla(205,75%,60%,1)";
+          } else {
+            return "hsla(105,75%,60%,1)";
+          }
+          // return d.newscasts = 0 ?  : "hsla(29,25%,60%,1)";
+        })
+        // .transition()
+        //   .duration(1250)
+        //   .attr("r", function(d) {
+        //     return scale(d.TSR);
+        //   })
+        ;
 
         dots.transition()
           .delay(function(d, i){
@@ -9790,37 +9820,57 @@ topojson = (function() {
           .ease("bounce")
           .duration(500)
           .attr("r", function(d) {
+            if ( d.TSR == 0 || d.longitude == 0 || d.latitude == 0){
+              return 0;
+            }
             return scale(d.TSR);
-            });
+            // return d.TSR != 0 ? scale(d.TSR) : 0;
+          });
     },
 
-    renderByProducts: function(dots){
-
+    renderByCume: function(dots){
       var projection = Controller.getProjection();
 
       var max = d3.max(Controller.getData(), function(d) {
-        return Number(d['total products']);
+        return Number(d.cume);
       });
 
       var min = d3.min(Controller.getData(), function(d) {
-        return Number(d['total products']);
+        return Number(d.cume);
       });
-
+      min = min == 0 ? 8 : min;
       var scale = d3.scale.linear(),
           domain = scale.domain([min, max]),
-          range = scale.range([2, 36]);
-       
+          range = scale.range([3, 60]);
+
       dots.enter()
         .append("circle")
-        .attr("cx", function (d) { return projection([d.longitude,d.latitude])[0]; })
-        .attr("cy", function (d) { return projection([d.longitude,d.latitude])[1]; })
+        .attr("cx", function (d) {
+          if (d.longitude == 0 || d.latitude == 0){
+            return projection([-95,40])[0];
+          }
+          return projection([d.longitude,d.latitude])[0];
+
+        })
+        .attr("cy", function (d) {
+          if (d.longitude == 0 || d.latitude == 0){
+            return projection([-95,40])[1];
+          }
+          return projection([d.longitude,d.latitude])[1];
+
+        })
         .attr("r", 0)
-        .attr("fill", "hsla(205,75%,60%,1")
-        .transition()
-          .duration(1250)
-          .attr("r", function(d) {
-            return scale(d['total products']);
-          });
+        .attr("class", function (d){
+          if (d.newscasts == 0){
+            return "nonparticipant";
+          } else {
+            return "participant";
+          }
+        })
+        // Fill is handled in the css.
+        // .attr("fill", function (d) {
+        //   return "hsla(0,0%,70%,1)";
+        // });
 
         dots.transition()
           .delay(function(d, i){
@@ -9829,8 +9879,11 @@ topojson = (function() {
           .ease("bounce")
           .duration(500)
           .attr("r", function(d) {
-            return scale(d['total products']);
-            });
+            if ( d.cume == 0 || d.longitude == 0 || d.latitude == 0){
+              return 0;
+            }
+            return scale(d.cume);
+          });
 
     }
 
@@ -9839,14 +9892,26 @@ topojson = (function() {
   var NavigationView = {
 
     init: function(){
-      
-      $('[data-filter=all]').addClass('active');
 
-      $('[data-filter]').on('click', function(e){
-        if (!$(this).hasClass('active')){
-          $('.active').removeClass('active');
-          $(this).addClass('active');  
-          Controller.switchFilters($(this).attr('data-filter'));
+      var htc = document.getElementById("help-text-content");
+      var originalText = htc.innerHTML;
+
+      $('input:radio').on('click', function(e){
+        if(e.target.checked){
+          Controller.reRender('cume');
+        }
+        if (document.getElementById('all').checked) {
+          document.body.classList.add("show-all");
+          document.body.classList.remove("show-participants", "comparison");
+          htc.innerHTML = originalText;
+        } else if (document.getElementById('participating').checked) {
+          document.body.classList.add("show-participants");
+          document.body.classList.remove("show-all", "comparison");
+          htc.innerHTML = "Participating stations — defined as those that have uploaded newscasts to NPR One — are green; non-participating stations aren't displayed. Larger circles indicate stations with larger CUME scores. Mouse over circles to see details.";
+        } else {
+          htc.innerHTML = "Participating stations — defined as those that have uploaded newscasts to NPR One — are green; non-participating stations are gray. Larger circles indicate stations with larger CUME scores. Mouse over circles to see details.";
+          document.body.classList.add("comparison");
+          document.body.classList.remove("show-participants", "show-all");
         }
       });
 
@@ -9855,12 +9920,6 @@ topojson = (function() {
   }
 
   Controller.init();
-
-  $('input:radio').on('click', function(e){
-    if(e.target.checked){
-      Controller.updateBubbleSizes(e.target.value);
-    }
-  })
 
   // Replace source
   $('img').error(function(){

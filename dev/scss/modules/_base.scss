@@ -6,6 +6,17 @@ html {
   box-sizing: inherit;
 }
 
+body {
+  background: #f6f6f6;
+  font-family: 'Gotham SSm', Helvetica, Arial, sans-serif;
+  padding: 0 calc(50% - 600px);
+}
+
 img {
   max-width: 100%;
+}
+
+h1 {
+  font-size: 1.65rem;
+  font-weight: 400;
 }

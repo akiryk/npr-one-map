@@ -1,0 +1,40 @@
+.participant,
+.nonparticipant {
+  transition: fill .4s ease;
+}
+
+.show-all .participant {
+  fill: hsla(0,0%,70%,1);
+}
+
+.show-all .nonparticipant {
+  fill: hsla(0,0%,70%,1);
+}
+
+.show-participants .participant {
+  fill: hsla(118,78%,47%,1);
+}
+
+.show-participants .nonparticipant {
+  fill: hsla(0,0%,70%,0);
+  pointer-events:  none;
+}
+
+.comparison .participant {
+  fill: hsla(118,78%,47%,1);
+}
+
+.comparison .nonparticipant {
+  fill: hsla(0,0%,42%,1);
+}
+
+.participant.active {
+  stroke: hsla(118,78%,30%,1);
+  fill: hsla(118,78%,47%,1);
+  stroke-width: 4;
+}
+
+.nonparticipant.active {
+  stroke: hsla(0,0%,30%,1);
+  stroke-width: 4;
+}
