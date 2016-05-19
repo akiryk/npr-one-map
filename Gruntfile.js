@@ -149,7 +149,6 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
     'connect',
     'sass',
-    'watchForProduction',
     'processhtml',
     'uglify'
     ]);

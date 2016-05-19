@@ -454,6 +454,15 @@ h1 {
   pointer-events: none;
 }
 
+.show-non-participants .participant {
+  fill: rgba(179, 179, 179, 0);
+  pointer-events: none;
+}
+
+.show-non-participants .nonparticipant {
+  fill: #6b6b6b;
+}
+
 .comparison .participant {
   fill: #21d51a;
 }

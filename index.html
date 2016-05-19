@@ -11,10 +11,6 @@
   (comment this out) /build
   -->
 
-  <!-- build:remove -->
-    <script src="http://localhost:35729/livereload.js"></script>
-  <!-- /build -->
-
   <script src="dev/js/libs/topojson.js"></script>
   <script src="dev/js/libs/d3.min.js"></script>
 
@@ -28,12 +24,14 @@
     <ul class="radio-group">
       <li><input type="radio" name="data-type" value="all" id="all" checked><label for="all">All eligible stations</label></li>
       <li><input type="radio" name="data-type" value="participating" id="participating" ><label for="participating">Only participating stations</label></li>
+      <li><input type="radio" name="data-type" value="nonparticipating" id="nonparticipating" ><label for="nonparticipating">Only non-participating stations</label></li>
       <li><input type="radio" name="data-type" value="comparison" id="comparison" ><label for="comparison">Both participating and non-participating stations</label></li>
     </ul>
     <div class="help-text">
-      <p id="help-text-content">Eligible stations are defined as stations with the right to share content with NPR One. Larger circles indicate stations with a larger cume. Mouse over circles to see details.</p>
-      <p><span class="total">Total U.S. Cume: 4,959,792</span></p>
+      <p id="help-text-content">Eligible stations are defined as stations that meet the requirements for participation in NPR One. Larger circles indicate stations with a larger CUME. Mouse over circles to see details.</p>
+      <p><span class="total">U.S. CUME: 4,959,792 according to Triton Webcast Metrics</span></p>
     </div>
+  </nav>
   </nav>
 
 

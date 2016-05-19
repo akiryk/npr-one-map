@@ -412,16 +412,20 @@
         }
         if (document.getElementById('all').checked) {
           document.body.classList.add("show-all");
-          document.body.classList.remove("show-participants", "comparison");
+          document.body.classList.remove("show-participants", "comparison", "show-non-participants");
           htc.innerHTML = originalText;
         } else if (document.getElementById('participating').checked) {
           document.body.classList.add("show-participants");
-          document.body.classList.remove("show-all", "comparison");
-          htc.innerHTML = "Participating stations — defined as those that have uploaded newscasts to NPR One — are green; non-participating stations aren't displayed. Larger circles indicate stations with larger CUME scores. Mouse over circles to see details.";
+          document.body.classList.remove("show-all", "comparison", "show-non-participants");
+          htc.innerHTML = "This map displays only those stations that are contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) to see stations reaching more listeners.";
+        } else if (document.getElementById('nonparticipating').checked) {
+          document.body.classList.add("show-non-participants");
+          document.body.classList.remove("show-all", "comparison", "show-participants");
+          htc.innerHTML = "This map displays only those stations that are not contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) for potential opportunities.";
         } else {
-          htc.innerHTML = "Participating stations — defined as those that have uploaded newscasts to NPR One — are green; non-participating stations are gray. Larger circles indicate stations with larger CUME scores. Mouse over circles to see details.";
+          htc.innerHTML = "Participating stations — defined as those that have uploaded newscasts to NPR One — are green; non-participating stations do not have newscasts and are gray. Larger circles indicate stations with a higher CUME.";
           document.body.classList.add("comparison");
-          document.body.classList.remove("show-participants", "show-all");
+          document.body.classList.remove("show-participants", "show-all", "show-non-participants");
         }
       });
 

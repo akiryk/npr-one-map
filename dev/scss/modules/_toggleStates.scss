@@ -20,6 +20,16 @@
   pointer-events:  none;
 }
 
+.show-non-participants .participant {
+  fill: hsla(0,0%,70%,0);
+  pointer-events:  none;
+}
+
+.show-non-participants .nonparticipant {
+  fill: hsla(0,0%,42%,1);
+}
+
+
 .comparison .participant {
   fill: hsla(118,78%,47%,1);
 }
