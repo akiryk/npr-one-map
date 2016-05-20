@@ -468,18 +468,22 @@ h1 {
 }
 
 .comparison .nonparticipant {
-  fill: #6b6b6b;
+  fill: #b3b3b3;
 }
 
 .participant.active {
-  stroke: #158811;
-  fill: #21d51a;
+  stroke: #0e5b0b;
+  fill: #158811;
   stroke-width: 4;
+  mix-blend-mode: normal;
 }
 
 .nonparticipant.active {
-  stroke: #4d4d4d;
+  stroke: #85000d;
+  fill: #eb0017;
   stroke-width: 4;
+  mix-blend-mode: normal;
+  opacity: 0.85;
 }
 
 header {
@@ -576,7 +580,6 @@ circle {
   opacity: 1.0;
   transition: opacity .25s;
   stroke-width: 4px;
-  stroke: rgba(255, 255, 255, 0);
 }
 
 circle:hover {
@@ -615,7 +618,7 @@ circle:hover {
   border-radius: 8px 8px 0 0;
 }
 .tooltip .slug.non-participant {
-  background-color: #4d4d4d;
+  background-color: #eb0017;
 }
 .tooltip h3 {
   clear: both;

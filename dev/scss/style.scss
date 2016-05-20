@@ -18,7 +18,6 @@ circle {
   opacity: 1.0;
   transition: opacity .25s;
   stroke-width: 4px;
-  stroke: hsla(118,100%,100%,0);
 }
 
 circle:hover {
@@ -57,7 +56,7 @@ circle:hover {
     border-radius: 8px 8px 0 0;
   }
   .slug.non-participant {
-    background-color: hsla(0,0%,30%,1);
+    background-color: hsla(354, 100%, 46%, 1);
   }
   h3 {
     clear: both;
