@@ -60,7 +60,7 @@
      * Rerender dots based on whether user has selected TSR or # of products
      * @param {string} type - TSR or products
      */
-    reRender: function(){
+    render: function(){
       View.render();
     },
 
@@ -213,142 +213,25 @@
 
       var self = this;
 
+      var type = type || 'cume';
+
       var div = this.tooltip,
           _data = Controller.getData();
 
       var dots = this.svg.selectAll("circle").data(_data);
 
-      var renderFunc;
-      if (type == 'TSR'){
-        renderFunc = 'renderByTSR';
-      } else {
-        renderFunc = 'renderByCume';
-      }
-
-      this[renderFunc](dots); //this[getScaleFn](dots);
-
-      dots.on("mouseover", function(d){
-        var toolTipXOffset = 20,
-            toolTipYOffset = 0;
-
-        if ((d3.event.pageX + 260) > window.innerWidth){
-          // tooltip will be too far to the right.
-          toolTipXOffset = -280;
-        }
-
-        if ((d3.event.pageY + 128) > window.innerHeight){
-          // tooltip will be too far to the right.
-          toolTipYOffset = -128;
-        }
-
-        var r = Math.round(this.getAttribute('r')),
-            cx = Math.round(this.getAttribute('cx')),
-            cy = Math.round(this.getAttribute('cy'));
-          d3.select(this).classed('active', true);
-          div.transition()
-            .duration(200)
-            .style("opacity", .9);
-          var markup = self.getTooltipMarkup(d);
-          div.html(markup)
-            .style("left",  (d3.event.pageX) + toolTipXOffset + "px")
-            .style("top", (d3.event.pageY) + toolTipYOffset + "px");
-        })
-        .on("mouseout", function(d){
-          d3.select(this).classed('active', false);
-          div.transition()
-            .duration(200)
-            .style("opacity", 0);
-        });
-
-      dots.each(function(d,i){
-        var node = d3.select(this);
-        var r = node.attr("r"),
-          nx1 = node.attr("cx") - r,
-          nx2 = node.attr("cx") + r,
-          ny1 = node.attr("cy") - r,
-          ny2 = node.attr("cy") + r;
-      });
-    },
-
-    /**
-     * Render dot sizes based on TSR
-     * @param {obj} dots - data mapped to <circle> elements
-     * TODO: refactor out duplication between this function and renderbyproducts
-     */
-    renderByTSR: function(dots){
-
       var projection = Controller.getProjection();
 
       var max = d3.max(Controller.getData(), function(d) {
-        return Number(d.TSR);
+        return Number(d[type]);
       });
 
       var min = d3.min(Controller.getData(), function(d) {
-        return Number(d.TSR);
+        return Number(d[type]);
       });
 
-      var scale = d3.scale.linear(),
-          domain = scale.domain([min, max]),
-          range = scale.range([5, 50]);
-
-      dots.enter()
-        .append("circle")
-        .attr("cx", function (d) {
-          if (d.longitude == 0 || d.latitude == 0){
-            return projection([-95,40])[0];
-          }
-          return projection([d.longitude,d.latitude])[0];
-
-        })
-        .attr("cy", function (d) {
-          if (d.longitude == 0 || d.latitude == 0){
-            return projection([-95,40])[1];
-          }
-          return projection([d.longitude,d.latitude])[1];
-
-        })
-        .attr("r", 0)
-        .attr("fill", function (d) {
-          if (d.newscasts == 0){
-            return "hsla(205,75%,60%,1)";
-          } else {
-            return "hsla(105,75%,60%,1)";
-          }
-          // return d.newscasts = 0 ?  : "hsla(29,25%,60%,1)";
-        })
-        // .transition()
-        //   .duration(1250)
-        //   .attr("r", function(d) {
-        //     return scale(d.TSR);
-        //   })
-        ;
-
-        dots.transition()
-          .delay(function(d, i){
-              return i*4;
-          })
-          .ease("bounce")
-          .duration(500)
-          .attr("r", function(d) {
-            if ( d.TSR == 0 || d.longitude == 0 || d.latitude == 0){
-              return 0;
-            }
-            return scale(d.TSR);
-            // return d.TSR != 0 ? scale(d.TSR) : 0;
-          });
-    },
-
-    renderByCume: function(dots){
-      var projection = Controller.getProjection();
-
-      var max = d3.max(Controller.getData(), function(d) {
-        return Number(d.cume);
-      });
-
-      var min = d3.min(Controller.getData(), function(d) {
-        return Number(d.cume);
-      });
       min = min == 0 ? 8 : min;
+
       var scale = d3.scale.linear(),
           domain = scale.domain([min, max]),
           range = scale.range([3, 60]);
@@ -389,11 +272,44 @@
           .ease("bounce")
           .duration(500)
           .attr("r", function(d) {
-            if ( d.cume == 0 || d.longitude == 0 || d.latitude == 0){
+            if ( d[type] == 0 || d.longitude == 0 || d.latitude == 0){
               return 0;
             }
-            return scale(d.cume);
+            return scale(d[type]);
           });
+
+      dots.on("mouseover", function(d){
+        var toolTipXOffset = 20,
+            toolTipYOffset = 0;
+
+        if ((d3.event.pageX + 260) > window.innerWidth){
+          // tooltip will be too far to the right.
+          toolTipXOffset = -280;
+        }
+
+        if ((d3.event.pageY + 128) > window.innerHeight){
+          // tooltip will be too far to the right.
+          toolTipYOffset = -128;
+        }
+
+        var r = Math.round(this.getAttribute('r')),
+            cx = Math.round(this.getAttribute('cx')),
+            cy = Math.round(this.getAttribute('cy'));
+          d3.select(this).classed('active', true);
+          div.transition()
+            .duration(200)
+            .style("opacity", .9);
+          var markup = self.getTooltipMarkup(d);
+          div.html(markup)
+            .style("left",  (d3.event.pageX) + toolTipXOffset + "px")
+            .style("top", (d3.event.pageY) + toolTipYOffset + "px");
+        })
+        .on("mouseout", function(d){
+          d3.select(this).classed('active', false);
+          div.transition()
+            .duration(200)
+            .style("opacity", 0);
+        });
 
     }
 
@@ -408,7 +324,7 @@
 
       $('input:radio').on('click', function(e){
         if(e.target.checked){
-          Controller.reRender('cume');
+          Controller.render('cume');
         }
         if (document.getElementById('all').checked) {
           document.body.classList.add("show-all");
