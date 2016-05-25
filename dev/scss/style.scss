@@ -6,6 +6,7 @@
 @import 'modules/layout';
 @import 'modules/toggleStates';
 @import 'modules/header';
+@import 'modules/buttons';
 
 path {
   fill: #ddd;
@@ -43,11 +44,10 @@ circle:hover {
   background: white;
   border: 0px;
   border-radius: 8px;
-  box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
+  box-shadow: -3px -2px 4px rgba(0,0,0,0.1);
   pointer-events: none;
 
   .slug {
-    background-color: hsla(118,78%,30%,1);
     color: rgba(255,255,255,0.9);
     text-align: left;
     font-size: 12px;
@@ -55,8 +55,17 @@ circle:hover {
     padding: 4px 10px;
     border-radius: 8px 8px 0 0;
   }
-  .slug.non-participant {
-    background-color: hsla(354, 100%, 46%, 1);
+  .tooltip-neither{
+    background-color: rgba(191,2,29,1);
+  }
+  .tooltip-both {
+    background-color: rgba(10,82,202,1);
+  }
+  .tooltip-local {
+    background-color: rgba(4,183,186,1);
+  }
+  .tooltip-newscasts {
+    background-color: rgba(29,185,23,1);
   }
   h3 {
     clear: both;

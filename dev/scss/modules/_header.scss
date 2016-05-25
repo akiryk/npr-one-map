@@ -6,6 +6,17 @@ header {
   margin: 0;
 }
 
+.page-description {
+  color: #777;
+  line-height: 1.6;
+  font-size: 16px;
+  max-width: 740px;
+
+  .special {
+    font-style: italic;
+  }
+}
+
 .navigation{
   width: 100%;
   margin: 2rem 2rem 0 2rem;

@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 /**
  * 1. Set default font family to sans-serif.
@@ -432,60 +433,74 @@ h1 {
   font-weight: 400;
 }
 
-circle {
-  fill: #6b6b6b;
-}
-
-.show-all circle,
-.show-participants circle,
-.show-non-participants circle,
-.compare-all circle {
-  transition: fill .6s ease;
-}
-
-.show-participants .yes-local-stories,
-.show-participants .yes-newscasts {
-  fill: #21d51a;
-}
-
-.show-participants .no-local-stories.no-newscasts {
+.transition circle {
   fill: rgba(179, 179, 179, 0);
+  transition: fill .3s ease;
+  pointer-events: all;
+}
+
+.hide-eligible circle {
   pointer-events: none;
 }
 
-.show-non-participants .yes-local-stories,
-.show-non-participants .yes-newscasts {
-  fill: rgba(179, 179, 179, 0);
-  pointer-events: none;
+.show-eligible circle {
+  fill: #adadad;
+  pointer-events: auto;
 }
 
-.show-non-participants circle {
-  fill: #6b6b6b;
-}
-
-.compare-all .yes-local-stories,
-.compare-all .yes-newscasts {
-  fill: #21d51a;
-}
-
-.compare-all .no-local-stories,
-.compare-all .no-newscasts {
-  fill: #b3b3b3;
-}
-
-.participant.active {
-  stroke: #0e5b0b;
-  fill: #158811;
+circle.active {
+  stroke: #adadad;
+  fill: #adadad;
   stroke-width: 4;
   mix-blend-mode: normal;
 }
 
-.nonparticipant.active {
-  stroke: #85000d;
-  fill: #eb0017;
+.show-newscasts .yes-newscasts {
+  fill: #1db917;
+  pointer-events: auto;
+}
+
+.yes-newscasts.active {
+  stroke: #1db917;
+  fill: #1db917;
   stroke-width: 4;
   mix-blend-mode: normal;
-  opacity: 0.85;
+}
+
+.show-local .yes-local-stories {
+  fill: #04b7ba;
+  pointer-events: auto;
+}
+
+.yes-local-stories.active {
+  stroke: #04b7ba;
+  fill: #04b7ba;
+  stroke-width: 4;
+  mix-blend-mode: normal;
+}
+
+.show-both .yes-newscasts.yes-local-stories {
+  fill: #0a52ca;
+  pointer-events: auto;
+}
+
+.yes-newscasts.yes-local-stories.active {
+  stroke: #0a52ca;
+  fill: #0a52ca;
+  stroke-width: 4;
+  mix-blend-mode: normal;
+}
+
+.show-neither .no-newscasts.no-local-stories {
+  fill: #bf021d;
+  pointer-events: auto;
+}
+
+.no-newscasts.no-local-stories.active {
+  stroke: #bf021d;
+  fill: #bf021d;
+  stroke-width: 4;
+  mix-blend-mode: normal;
 }
 
 header {
@@ -495,6 +510,16 @@ header {
 
 .page-title {
   margin: 0;
+}
+
+.page-description {
+  color: #777;
+  line-height: 1.6;
+  font-size: 16px;
+  max-width: 740px;
+}
+.page-description .special {
+  font-style: italic;
 }
 
 .navigation {
@@ -571,6 +596,52 @@ header {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
+.button-group {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.button-group > li {
+  float: left;
+  margin-right: 1em;
+  background: #bcbcbc;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 15px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.button-group > li.active:before {
+  content: '×';
+  margin-right: 6px;
+  margin-bottom: 2px;
+  transition: margin-right .3s;
+}
+.button-group > li:hover {
+  box-shadow: inset 0px 0px 44px rgba(0, 0, 0, 0.5);
+}
+
+.eligible.active {
+  background-color: #6e6e6e;
+}
+
+.newscasts.active {
+  background-color: #1db917;
+}
+
+.local.active {
+  background-color: #04b7ba;
+}
+
+.newscasts-and-local.active {
+  background-color: #0a52ca;
+}
+
+.neither.active {
+  background-color: #bf021d;
+}
+
 path {
   fill: #ddd;
   stroke: #fff;
@@ -607,11 +678,10 @@ circle:hover {
   background: white;
   border: 0px;
   border-radius: 8px;
-  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: -3px -2px 4px rgba(0, 0, 0, 0.1);
   pointer-events: none;
 }
 .tooltip .slug {
-  background-color: #158811;
   color: rgba(255, 255, 255, 0.9);
   text-align: left;
   font-size: 12px;
@@ -619,8 +689,17 @@ circle:hover {
   padding: 4px 10px;
   border-radius: 8px 8px 0 0;
 }
-.tooltip .slug.non-participant {
-  background-color: #eb0017;
+.tooltip .tooltip-neither {
+  background-color: #bf021d;
+}
+.tooltip .tooltip-both {
+  background-color: #0a52ca;
+}
+.tooltip .tooltip-local {
+  background-color: #04b7ba;
+}
+.tooltip .tooltip-newscasts {
+  background-color: #1db917;
 }
 .tooltip h3 {
   clear: both;
