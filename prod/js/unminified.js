@@ -9744,11 +9744,18 @@ topojson = (function() {
         })
         .attr("r", 0)
         .attr("class", function (d){
+          var classes = '';
           if (d.newscasts == 0){
-            return "nonparticipant";
+            classes += ' no-newscasts';
           } else {
-            return "participant";
+            classes += " yes-newscasts";
           }
+          if (d.localstories == 0){
+            classes += ' no-local-stories';
+          } else {
+            classes += ' yes-local-stories';
+          }
+          return classes;
         })
         // Fill is handled in the css.
         // .attr("fill", function (d) {
@@ -9813,25 +9820,46 @@ topojson = (function() {
       var originalText = htc.innerHTML;
 
       $('input:radio').on('click', function(e){
+
         if(e.target.checked){
           Controller.render('cume');
         }
-        if (document.getElementById('all').checked) {
-          document.body.classList.add("show-all");
-          document.body.classList.remove("show-participants", "comparison", "show-non-participants");
-          htc.innerHTML = originalText;
-        } else if (document.getElementById('participating').checked) {
-          document.body.classList.add("show-participants");
-          document.body.classList.remove("show-all", "comparison", "show-non-participants");
-          htc.innerHTML = "This map displays only those stations that are contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) to see stations reaching more listeners.";
-        } else if (document.getElementById('nonparticipating').checked) {
-          document.body.classList.add("show-non-participants");
-          document.body.classList.remove("show-all", "comparison", "show-participants");
-          htc.innerHTML = "This map displays only those stations that are not contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) for potential opportunities.";
-        } else {
-          htc.innerHTML = "Participating stations — defined as those that have uploaded newscasts to NPR One — are green; non-participating stations do not have newscasts and are gray. Larger circles indicate stations with a higher CUME.";
-          document.body.classList.add("comparison");
-          document.body.classList.remove("show-participants", "show-all", "show-non-participants");
+
+        document.body.className = '';
+
+        var selection = $('input[name=data-type]:checked', '#toggler').val();
+
+        switch(selection){
+          case 'newscasts':
+            console.log("yes, it is newscasts");
+            break;
+          case 'show-all':
+            document.body.classList.add("show-all");
+            htc.innerHTML = originalText;
+            break;
+          case 'compare':
+            document.body.classList.add("compare-all");
+            htc.innerHTML = "Participating stations — defined as those that have uploaded newscasts to NPR One — are green; non-participating stations do not have newscasts and are gray. Larger circles indicate stations with a higher CUME.";
+            break;
+          case 'newscasts':
+            document.body.classList.add("show-non-participants");
+            htc.innerHTML = "This map displays only those stations that are not contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) for potential opportunities.";
+            break;
+          case 'no-newscasts':
+            document.body.classList.add("show-non-participants");
+            htc.innerHTML = "This map displays only those stations that are not contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) for potential opportunities.";
+            break;
+          case 'newscasts-or-local':
+            document.body.classList.add("show-non-participants");
+            htc.innerHTML = "This map displays only those stations that are not contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) for potential opportunities.";
+            break;
+          case 'no-participation':
+            document.body.classList.add("show-non-participants");
+            htc.innerHTML = "This map displays only those stations that are not contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) for potential opportunities.";
+          break;
+          default:
+            htc.innerHTML = originalText;
+            document.body.classList.add("show-all");
         }
       });
 

@@ -24,11 +24,13 @@
 <body class="show-all">
   <header><h1 class="page-title">NPR One Station Engagement</h1></header>
   <nav class="navigation">
-    <ul class="radio-group">
-      <li><input type="radio" name="data-type" value="all" id="all" checked><label for="all">All eligible stations</label></li>
-      <li><input type="radio" name="data-type" value="participating" id="participating" ><label for="participating">Only participating stations</label></li>
-      <li><input type="radio" name="data-type" value="nonparticipating" id="nonparticipating" ><label for="nonparticipating">Only non-participating stations</label></li>
-      <li><input type="radio" name="data-type" value="comparison" id="comparison" ><label for="comparison">Both participating and non-participating stations</label></li>
+    <ul class="radio-group" id="toggler">
+      <li><input type="radio" name="data-type" value="show-all" id="show-all" checked><label for="show-all">All eligible stations</label></li>
+      <li><input type="radio" name="data-type" value="compare" id="compare" ><label for="compare">Compare stations that participate vs. those that don't</label></li>
+      <li><input type="radio" name="data-type" value="newscasts" id="newscasts" ><label for="newscasts">Stations submit newscasts but not local stories</label></li>
+      <li><input type="radio" name="data-type" value="no-newscasts" id="no-newscasts" ><label for="no-newscasts">Stations that don't submit newscasts</label></li>
+      <li><input type="radio" name="data-type" value="newscasts-or-local" id="newscasts-or-local" ><label for="newscasts-or-local">Stations submit newscasts AND/OR local stories</label></li>
+      <li><input type="radio" name="data-type" value="no-participation" id="no-participation" ><label for="no-participation">Stations that submit neither newscasts or stories.</label></li>
     </ul>
     <div class="help-text">
       <p id="help-text-content">Eligible stations are defined as stations that meet the requirements for participation in NPR One. Larger circles indicate stations with a larger CUME. Mouse over circles to see details.</p>

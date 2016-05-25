@@ -432,42 +432,44 @@ h1 {
   font-weight: 400;
 }
 
-.participant,
-.nonparticipant {
-  transition: fill .4s ease;
-}
-
-.show-all .participant {
-  fill: #b3b3b3;
-}
-
-.show-all .nonparticipant {
-  fill: #b3b3b3;
-}
-
-.show-participants .participant {
-  fill: #21d51a;
-}
-
-.show-participants .nonparticipant {
-  fill: rgba(179, 179, 179, 0);
-  pointer-events: none;
-}
-
-.show-non-participants .participant {
-  fill: rgba(179, 179, 179, 0);
-  pointer-events: none;
-}
-
-.show-non-participants .nonparticipant {
+circle {
   fill: #6b6b6b;
 }
 
-.comparison .participant {
+.show-all circle,
+.show-participants circle,
+.show-non-participants circle,
+.compare-all circle {
+  transition: fill .6s ease;
+}
+
+.show-participants .yes-local-stories,
+.show-participants .yes-newscasts {
   fill: #21d51a;
 }
 
-.comparison .nonparticipant {
+.show-participants .no-local-stories.no-newscasts {
+  fill: rgba(179, 179, 179, 0);
+  pointer-events: none;
+}
+
+.show-non-participants .yes-local-stories,
+.show-non-participants .yes-newscasts {
+  fill: rgba(179, 179, 179, 0);
+  pointer-events: none;
+}
+
+.show-non-participants circle {
+  fill: #6b6b6b;
+}
+
+.compare-all .yes-local-stories,
+.compare-all .yes-newscasts {
+  fill: #21d51a;
+}
+
+.compare-all .no-local-stories,
+.compare-all .no-newscasts {
   fill: #b3b3b3;
 }
 

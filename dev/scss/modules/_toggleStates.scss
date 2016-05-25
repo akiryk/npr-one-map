@@ -1,41 +1,41 @@
-.participant,
-.nonparticipant {
-  transition: fill .4s ease;
-}
-
-.show-all .participant {
-  fill: hsla(0,0%,70%,1);
-}
-
-.show-all .nonparticipant {
-  fill: hsla(0,0%,70%,1);
-}
-
-.show-participants .participant {
-  fill: hsla(118,78%,47%,1);
-}
-
-.show-participants .nonparticipant {
-  fill: hsla(0,0%,70%,0);
-  pointer-events:  none;
-}
-
-.show-non-participants .participant {
-  fill: hsla(0,0%,70%,0);
-  pointer-events:  none;
-}
-
-.show-non-participants .nonparticipant {
+circle {
   fill: hsla(0,0%,42%,1);
 }
 
+.show-all circle,
+.show-participants circle,
+.show-non-participants circle,
+.compare-all circle {
+  transition: fill .6s ease;
+}
 
-.comparison .participant {
+.show-participants .yes-local-stories,
+.show-participants .yes-newscasts, {
   fill: hsla(118,78%,47%,1);
 }
 
-.comparison .nonparticipant {
-  // fill: hsla(0,0%,42%,1);
+.show-participants .no-local-stories.no-newscasts {
+  fill: hsla(0,0%,70%,0);
+  pointer-events:  none;
+}
+
+.show-non-participants .yes-local-stories,
+.show-non-participants .yes-newscasts {
+  fill: hsla(0,0%,70%,0);
+  pointer-events:  none;
+}
+
+.show-non-participants circle {
+  fill: hsla(0,0%,42%,1);
+}
+
+.compare-all .yes-local-stories,
+.compare-all .yes-newscasts {
+  fill: hsla(118,78%,47%,1);
+}
+
+.compare-all .no-local-stories,
+.compare-all .no-newscasts {
   fill: hsla(0,0%,70%,1);
 }
 
