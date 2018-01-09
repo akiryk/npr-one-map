@@ -15,7 +15,7 @@ module.exports = function(grunt) {
             'dev/js/libs/*.js',
             'dev/js/main.js',
         ],
-        dest: 'prod/js/unminified.js',
+        dest: 'docs/js/unminified.js',
       }
     },
     connect: {
@@ -28,8 +28,8 @@ module.exports = function(grunt) {
     },
     uglify: {
       build: {
-        src: 'prod/js/production.js',
-        dest: 'prod/js/production.min.js'
+        src: 'docs/js/production.js',
+        dest: 'docs/js/production.min.js'
       }
     },
     processhtml: {
@@ -45,7 +45,7 @@ module.exports = function(grunt) {
           style: 'expanded'
         },
         files: {                         // Dictionary of files
-          'prod/css/style.css': 'dev/scss/style.scss',
+          'docs/css/style.css': 'dev/scss/style.scss',
            // 'destination': 'source'
         }
       }
@@ -119,27 +119,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-processhtml');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-responsive-images');
-  grunt.loadNpmTasks('grunt-respimg');
-  grunt.loadNpmTasks('grunt-pagespeed');
 
   // Default task(s).
   grunt.registerTask('default', [
     'connect',
     'sass',
     'watch'
-    ]);
-
-  grunt.registerTask('optimize', [
-    'respimg',
-    ]);
-
-  grunt.registerTask('resize', [
-    'responsive_images',
-    ]);
-
-  grunt.registerTask('speed', [
-    'pagespeed',
     ]);
 
   grunt.registerTask('compile-sass', [

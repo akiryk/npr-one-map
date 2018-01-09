@@ -342,16 +342,12 @@
 
     init: function(){
       document.body.classList.add("show-eligible");
-      // var htc = document.getElementById("help-text-content");
-      // var originalText = htc.innerHTML;
 
       $('#toggler').on('click', function(e){
         var $target = $(e.target);
         $target.toggleClass('active');
 
         Controller.render('cume');
-
-        // document.body.className = '';
 
         switch($target.data('view')){
           case 'eligible':

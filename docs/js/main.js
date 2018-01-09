@@ -60,7 +60,7 @@
      * Rerender dots based on whether user has selected TSR or # of products
      * @param {string} type - TSR or products
      */
-    reRender: function(){
+    render: function(){
       View.render();
     },
 
@@ -127,10 +127,25 @@
      */
     getTooltipMarkup: function(d){
 
-      var stationType = d.newscasts == 0 ? "non-participant" : "participant";
+      var stationType,
+          className;
+
+      if (d.newscasts == 0 && d.localstories == 0) {
+        stationType = "Does not participate";
+        className = "tooltip-neither";
+      } else if (d.newscasts == 0 && d.localstories == 1){
+        stationType = "Contributes local stories";
+        className = "tooltip-local";
+      } else if (d.newscasts == 1 && d.localstories == 0){
+        stationType = "Contributes newscasts";
+        className = "tooltip-newscasts";
+      } else {
+        stationType = "Contributes both newscasts and local stories";
+        className = "tooltip-both";
+      }
 
 
-      var mk =  "<div class='slug type'>type</div>" +
+      var mk =  "<div class='slug classes'>type</div>" +
         "<h3>title</h3>" +
         "<p><span class='cume'>CUME:</span> cumenum</p>" +
         "<img src='imgsrc'>";
@@ -142,12 +157,13 @@
       }
       var mapObj = {
         type: stationType,
+        classes: className,
         title: d.name,
         imgsrc: "data/" + stationLogo,
         cumenum: d.cume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       };
 
-      return mk.replace(/type|title|cumenum|imgsrc/gi, function(matched){
+      return mk.replace(/type|classes|title|cumenum|imgsrc/gi, function(matched){
         return mapObj[matched];
       });
 
@@ -213,19 +229,77 @@
 
       var self = this;
 
+      var type = type || 'cume';
+
       var div = this.tooltip,
           _data = Controller.getData();
 
       var dots = this.svg.selectAll("circle").data(_data);
 
-      var renderFunc;
-      if (type == 'TSR'){
-        renderFunc = 'renderByTSR';
-      } else {
-        renderFunc = 'renderByCume';
-      }
+      var projection = Controller.getProjection();
 
-      this[renderFunc](dots); //this[getScaleFn](dots);
+      var max = d3.max(Controller.getData(), function(d) {
+        return Number(d[type]);
+      });
+
+      var min = d3.min(Controller.getData(), function(d) {
+        return Number(d[type]);
+      });
+
+      min = min == 0 ? 8 : min;
+
+      var scale = d3.scale.linear(),
+          domain = scale.domain([min, max]),
+          range = scale.range([3, 60]);
+
+      dots.enter()
+        .append("circle")
+        .attr("cx", function (d) {
+          if (d.longitude == 0 || d.latitude == 0){
+            return projection([-95,40])[0];
+          }
+          return projection([d.longitude,d.latitude])[0];
+
+        })
+        .attr("cy", function (d) {
+          if (d.longitude == 0 || d.latitude == 0){
+            return projection([-95,40])[1];
+          }
+          return projection([d.longitude,d.latitude])[1];
+
+        })
+        .attr("r", 0)
+        .attr("class", function (d){
+          var classes = '';
+          if (d.newscasts == 0){
+            classes += ' no-newscasts';
+          } else {
+            classes += " yes-newscasts";
+          }
+          if (d.localstories == 0){
+            classes += ' no-local-stories';
+          } else {
+            classes += ' yes-local-stories';
+          }
+          return classes;
+        })
+        // Fill is handled in the css.
+        // .attr("fill", function (d) {
+        //   return "hsla(0,0%,70%,1)";
+        // });
+
+        dots.transition()
+          .delay(function(d, i){
+              return i*4;
+          })
+          .ease("bounce")
+          .duration(500)
+          .attr("r", function(d) {
+            if ( d[type] == 0 || d.longitude == 0 || d.latitude == 0){
+              return 0;
+            }
+            return scale(d[type]);
+          });
 
       dots.on("mouseover", function(d){
         var toolTipXOffset = 20,
@@ -260,141 +334,6 @@
             .style("opacity", 0);
         });
 
-      dots.each(function(d,i){
-        var node = d3.select(this);
-        var r = node.attr("r"),
-          nx1 = node.attr("cx") - r,
-          nx2 = node.attr("cx") + r,
-          ny1 = node.attr("cy") - r,
-          ny2 = node.attr("cy") + r;
-      });
-    },
-
-    /**
-     * Render dot sizes based on TSR
-     * @param {obj} dots - data mapped to <circle> elements
-     * TODO: refactor out duplication between this function and renderbyproducts
-     */
-    renderByTSR: function(dots){
-
-      var projection = Controller.getProjection();
-
-      var max = d3.max(Controller.getData(), function(d) {
-        return Number(d.TSR);
-      });
-
-      var min = d3.min(Controller.getData(), function(d) {
-        return Number(d.TSR);
-      });
-
-      var scale = d3.scale.linear(),
-          domain = scale.domain([min, max]),
-          range = scale.range([5, 50]);
-
-      dots.enter()
-        .append("circle")
-        .attr("cx", function (d) {
-          if (d.longitude == 0 || d.latitude == 0){
-            return projection([-95,40])[0];
-          }
-          return projection([d.longitude,d.latitude])[0];
-
-        })
-        .attr("cy", function (d) {
-          if (d.longitude == 0 || d.latitude == 0){
-            return projection([-95,40])[1];
-          }
-          return projection([d.longitude,d.latitude])[1];
-
-        })
-        .attr("r", 0)
-        .attr("fill", function (d) {
-          if (d.newscasts == 0){
-            return "hsla(205,75%,60%,1)";
-          } else {
-            return "hsla(105,75%,60%,1)";
-          }
-          // return d.newscasts = 0 ?  : "hsla(29,25%,60%,1)";
-        })
-        // .transition()
-        //   .duration(1250)
-        //   .attr("r", function(d) {
-        //     return scale(d.TSR);
-        //   })
-        ;
-
-        dots.transition()
-          .delay(function(d, i){
-              return i*4;
-          })
-          .ease("bounce")
-          .duration(500)
-          .attr("r", function(d) {
-            if ( d.TSR == 0 || d.longitude == 0 || d.latitude == 0){
-              return 0;
-            }
-            return scale(d.TSR);
-            // return d.TSR != 0 ? scale(d.TSR) : 0;
-          });
-    },
-
-    renderByCume: function(dots){
-      var projection = Controller.getProjection();
-
-      var max = d3.max(Controller.getData(), function(d) {
-        return Number(d.cume);
-      });
-
-      var min = d3.min(Controller.getData(), function(d) {
-        return Number(d.cume);
-      });
-      min = min == 0 ? 8 : min;
-      var scale = d3.scale.linear(),
-          domain = scale.domain([min, max]),
-          range = scale.range([3, 60]);
-
-      dots.enter()
-        .append("circle")
-        .attr("cx", function (d) {
-          if (d.longitude == 0 || d.latitude == 0){
-            return projection([-95,40])[0];
-          }
-          return projection([d.longitude,d.latitude])[0];
-
-        })
-        .attr("cy", function (d) {
-          if (d.longitude == 0 || d.latitude == 0){
-            return projection([-95,40])[1];
-          }
-          return projection([d.longitude,d.latitude])[1];
-
-        })
-        .attr("r", 0)
-        .attr("class", function (d){
-          if (d.newscasts == 0){
-            return "nonparticipant";
-          } else {
-            return "participant";
-          }
-        })
-        // Fill is handled in the css.
-        // .attr("fill", function (d) {
-        //   return "hsla(0,0%,70%,1)";
-        // });
-
-        dots.transition()
-          .delay(function(d, i){
-              return i*4;
-          })
-          .ease("bounce")
-          .duration(500)
-          .attr("r", function(d) {
-            if ( d.cume == 0 || d.longitude == 0 || d.latitude == 0){
-              return 0;
-            }
-            return scale(d.cume);
-          });
-
     }
 
   }
@@ -402,32 +341,81 @@
   var NavigationView = {
 
     init: function(){
+      document.body.classList.add("show-eligible");
+      // var htc = document.getElementById("help-text-content");
+      // var originalText = htc.innerHTML;
 
-      var htc = document.getElementById("help-text-content");
-      var originalText = htc.innerHTML;
+      $('#toggler').on('click', function(e){
+        var $target = $(e.target);
+        $target.toggleClass('active');
 
-      $('input:radio').on('click', function(e){
-        if(e.target.checked){
-          Controller.reRender('cume');
+        Controller.render('cume');
+
+        // document.body.className = '';
+
+        switch($target.data('view')){
+          case 'eligible':
+            document.body.classList.toggle("show-eligible");
+            document.body.classList.toggle("hide-eligible");
+            break;
+          case 'newscasts':
+            document.body.classList.toggle("show-newscasts");
+            break;
+          case 'local':
+            document.body.classList.toggle("show-local");
+            break;
+          case 'newscasts-and-local':
+            document.body.classList.toggle("show-both");
+            break;
+          case 'neither':
+            document.body.classList.toggle("show-neither");
+            break;
+          default:
+            break;
         }
-        if (document.getElementById('all').checked) {
-          document.body.classList.add("show-all");
-          document.body.classList.remove("show-participants", "comparison", "show-non-participants");
-          htc.innerHTML = originalText;
-        } else if (document.getElementById('participating').checked) {
-          document.body.classList.add("show-participants");
-          document.body.classList.remove("show-all", "comparison", "show-non-participants");
-          htc.innerHTML = "Participating stations — defined as those that have uploaded newscasts to NPR One — are green; non-participating stations aren't displayed. Larger circles indicate stations with larger CUME scores. Mouse over circles to see details.";
-        } else if (document.getElementById('nonparticipating').checked) {
-          document.body.classList.add("show-non-participants");
-          document.body.classList.remove("show-all", "comparison", "show-participants");
-          htc.innerHTML = "This map displays only those stations that aren't contributing newscasts to NPR One. Look for larger circles (stations with a higher cume) for potential opportunities.";
-        } else {
-          htc.innerHTML = "Participating stations — defined as those that have uploaded newscasts to NPR One — are green; non-participating stations are gray. Larger circles indicate stations with larger CUME scores. Mouse over circles to see details.";
-          document.body.classList.add("comparison");
-          document.body.classList.remove("show-participants", "show-all", "show-non-participants");
-        }
+
       });
+
+      // $('input:radio').on('click', function(e){
+
+      //   if(e.target.checked){
+      //     Controller.render('cume');
+      //   }
+
+      //   document.body.className = '';
+
+      //   var selection = $('input[name=data-type]:checked', '#toggler').val();
+      //   console.log(selection);
+      //   switch(selection){
+      //     case 'show-all':
+      //       document.body.classList.add("show-all");
+      //       htc.innerHTML = originalText;
+      //       break;
+      //     case 'compare':
+      //       document.body.classList.add("compare-all");
+      //       htc.innerHTML = "Participating stations — defined as those that have uploaded newscasts to NPR One — are green; non-participating stations do not have newscasts and are gray. Larger circles indicate stations with a higher CUME.";
+      //       break;
+      //     case 'newscasts':
+      //       document.body.classList.add("just-newscasts");
+      //       htc.innerHTML = "This map displays only those stations that are not contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) for potential opportunities.";
+      //       break;
+      //     case 'no-newscasts':
+      //       document.body.classList.add("no-newscasts");
+      //       htc.innerHTML = "This map displays only those stations that are not contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) for potential opportunities.";
+      //       break;
+      //     case 'newscasts-or-local':
+      //       document.body.classList.add("show-participants");
+      //       htc.innerHTML = "This map displays only those stations that are not contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) for potential opportunities.";
+      //       break;
+      //     case 'no-participation':
+      //       document.body.classList.add("show-non-participants");
+      //       htc.innerHTML = "This map displays only those stations that are not contributing newscasts to NPR One. Look for larger circles (stations with a higher CUME) for potential opportunities.";
+      //     break;
+      //     default:
+      //       htc.innerHTML = originalText;
+      //       document.body.classList.add("show-all");
+      //   }
+      // });
 
     }
 
